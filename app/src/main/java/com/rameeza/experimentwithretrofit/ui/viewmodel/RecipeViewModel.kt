@@ -3,6 +3,7 @@ package com.rameeza.experimentwithretrofit.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rameeza.experimentwithretrofit.data.model.Recipe
+import com.rameeza.experimentwithretrofit.data.remote.ApiService
 import com.rameeza.experimentwithretrofit.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,9 @@ sealed class UiState {
     object Empty : UiState()
 }
 
-class RecipeViewModel : ViewModel() {
+class RecipeViewModel(
+    private val apiService: ApiService = RetrofitClient.apiService
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Empty)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -27,7 +30,7 @@ class RecipeViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
-                val response = RetrofitClient.apiService.searchRecipes(query)
+                val response = apiService.searchRecipes(query)
                 if (response.isSuccessful) {
                     val meals = response.body()?.meals
                     if (meals.isNullOrEmpty()) {
@@ -48,7 +51,7 @@ class RecipeViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = UiState.Loading
             try {
-                val response = RetrofitClient.apiService.getRandomRecipe()
+                val response = apiService.getRandomRecipe()
                 if (response.isSuccessful) {
                     val meals = response.body()?.meals
                     if (meals.isNullOrEmpty()) {
