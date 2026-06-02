@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 sealed class UiState {
+    object Idle : UiState()
     object Loading : UiState()
     data class Success(val recipes: List<Recipe>) : UiState()
     data class Error(val message: String) : UiState()
@@ -21,7 +22,7 @@ class RecipeViewModel(
     private val apiService: ApiService = RetrofitClient.apiService
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Empty)
+    private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun searchRecipes(query: String) {

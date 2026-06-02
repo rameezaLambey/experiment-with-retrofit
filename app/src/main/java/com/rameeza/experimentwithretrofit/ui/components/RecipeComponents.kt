@@ -1,16 +1,24 @@
 package com.rameeza.experimentwithretrofit.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import androidx.compose.ui.tooling.preview.Preview
 import com.rameeza.experimentwithretrofit.data.model.Recipe
+import com.rameeza.experimentwithretrofit.mocks.RecipeMock
 import com.rameeza.experimentwithretrofit.ui.theme.ExperimentWithRetrofitTheme
 
 @Composable
@@ -18,33 +26,53 @@ fun RecipeItem(recipe: Recipe) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column {
-            AsyncImage(
-                model = recipe.imageUrl,
-                contentDescription = recipe.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                contentScale = ContentScale.Crop
-            )
+            Box(modifier = Modifier.fillMaxWidth().height(180.dp)) {
+                AsyncImage(
+                    model = recipe.imageUrl,
+                    contentDescription = recipe.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                
+                Surface(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .align(Alignment.TopEnd),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)
+                ) {
+                    Text(
+                        text = recipe.category,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            }
+            
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = recipe.name,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = recipe.category,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
                 Text(
                     text = recipe.instructions,
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 3
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -53,7 +81,9 @@ fun RecipeItem(recipe: Recipe) {
 
 @Composable
 fun RecipeList(recipes: List<Recipe>) {
-    LazyColumn {
+    LazyColumn(
+        contentPadding = PaddingValues(vertical = 12.dp)
+    ) {
         items(recipes) { recipe ->
             RecipeItem(recipe = recipe)
         }
@@ -64,15 +94,6 @@ fun RecipeList(recipes: List<Recipe>) {
 @Composable
 fun RecipeItemPreview() {
     ExperimentWithRetrofitTheme {
-        RecipeItem(
-            recipe = Recipe(
-                id = "1",
-                name = "Chocolate Cake",
-                category = "Dessert",
-                instructions = "Mix ingredients and bake...",
-                imageUrl = "https://www.themealdb.com/images/media/meals/wvpsw11487340456.jpg",
-                youtubeUrl = null
-            )
-        )
+        RecipeItem(recipe = RecipeMock.createRecipe())
     }
 }
